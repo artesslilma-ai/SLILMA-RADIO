@@ -38,9 +38,12 @@ jobs:
         with:
           gradle-version: "8.9"
 
-      - name: Configurar aplicación
+     
+      - name: Corregir carpeta de aplicación
         run: |
-          sed -i '/include(":app")/a project(":app").projectDir = file("aplicación")' settings.gradle.kts
+          mv aplicación app
+          test -f app/build.gradle.kts
+
 
       - name: Compilar APK
         run: gradle --no-daemon :app:assembleDebug
