@@ -52,7 +52,7 @@ jobs:
             exit 1
           fi
           echo "APP_DIR=$APP_DIR" >> "$GITHUB_ENV"
-          echo "project(':app').projectDir = file('$APP_DIR')" >> settings.gradle.kts
+          printf '\nproject(":app").projectDir = file("%s")\n' "$APP_DIR" >> settings.gradle.kts
 
       - name: Compilar APK
         run: gradle --no-daemon :app:assembleDebug
