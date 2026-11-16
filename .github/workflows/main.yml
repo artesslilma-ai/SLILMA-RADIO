@@ -1,10 +1,13 @@
 
-name: Compilar SLILMA RADIO APK
+name: Compilador SLILMA RADIO APK
 
 on:
   workflow_dispatch:
   push:
     branches: [ "principal" ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -21,26 +24,28 @@ jobs:
           java-version: "17"
 
       - name: Preparar Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          cmdline-tools-version: "15859902"
+          packages: ""
+          accept-android-sdk-licenses: "true"
 
       - name: Instalar componentes Android
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Preparar Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
 
-      - name: Configurar carpeta de aplicación
+      - name: Configurar aplicación
         run: |
           sed -i '/include(":app")/a project(":app").projectDir = file("aplicación")' settings.gradle.kts
 
       - name: Compilar APK
-        run: gradle --no-daemon assembleDebug
+        run: gradle --no-daemon :app:assembleDebug
 
-      - name: Descargar APK
+      - name: Guardar APK
         uses: actions/upload-artifact@v4
         with:
           name: SLILMA_RADIO-APK
